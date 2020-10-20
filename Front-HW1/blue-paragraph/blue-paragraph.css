@@ -1,0 +1,62 @@
+.body{
+    position: relative;
+    margin: 0;
+    background-color: aqua;
+    border: 10px solid white;
+}
+.rightdiv{
+    float:right;
+    margin-right: 35px;
+    width: 31%;
+    height: 45%;
+    background-color: rgb(241, 237, 237);
+    box-sizing: border-box;
+    padding-top: 15;
+}
+.titels{
+    font-weight: bold;
+    font-family: sans-serif;
+    margin-left: 110px;
+    font-size: 12;
+    margin-bottom:2;
+    margin-top: 30;
+}
+
+.container { 
+    display: inline-block;
+    background-color: rgb(231, 229, 229); 
+    border:2px solid rgb(230, 230, 230);
+    width: 260px;
+    margin-left: 110; 
+    border-radius: 15px;
+    margin-top: 0; 
+    margin-bottom: 0;
+} 
+
+
+.graphicdesign { 
+    background-color: rgb(233, 116, 171);
+    height: 14;
+    border-radius: 15px; 
+    width: 100%; 
+} 
+
+.html{ 
+    background-color: rgb(224, 179, 55); 
+    height: 14;
+    border-radius: 15px; 
+    width: 90%; 
+}
+.jquery{
+    background-color: rgb(154, 202, 114); 
+    height: 14;
+   
+    border-radius: 15px; 
+    width: 70%; 
+}
+.wordpress{
+    background-color: rgb(91, 177, 199); 
+    height: 14;
+    border-radius: 15px; 
+    width: 80%; 
+}
