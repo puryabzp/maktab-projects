@@ -1,0 +1,69 @@
+.container{
+    display: flex;
+    background-color: rgb(205, 235, 139);
+    width: 320px;
+    flex-wrap: wrap;
+}
+.square{
+  background-color: rgb(217, 232, 251);
+  width: 50px;
+  margin: 3px;
+  height: 50px;
+  border: 1px solid rgb(189, 215, 167);
+}
+.rectangle{
+    width: 130px;
+    height: 50px;
+    background-color: rgb(255, 230, 205);
+    margin: 3px;
+    border: 1px solid rgb(236, 211, 155);
+
+}
+.complexdiv{
+    display: flex;
+    width: 320px;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.firstdiv{
+    display: flex;
+    width: 182px;
+    justify-content: flex-end;
+
+}
+.secondiv{
+    display: flex;
+    justify-content: space-between;
+    width: 320px;
+}
+.thirddiv{
+    display: flex;
+    width: 175px;
+    justify-content: flex-end;
+}
+.fourthdiv{
+    display: flex;
+    width: 145px;
+    justify-content: flex-end;
+}
+.fifthdiv{
+    display: flex;
+    width: 320px;
+
+}
+.sixthdiv{
+    display: flex;
+    width: 180px;
+    justify-content: flex-end;
+}
+.seventhdiv{
+    display: flex;
+    width: 140px;
+    justify-content: center;
+}
+.eightdiv{
+    display: flex;
+    width: 320px;
+    justify-content: space-between;
+
+}
