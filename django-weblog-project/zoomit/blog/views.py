@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
 from .models import Post, Category, PostSetting, Comment, CommentLike
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.template import loader
 from django.urls import reverse
+from .forms import UserRegistrationForm, CommentForm, LoginForm
 
 
 def all_posts(request):
@@ -22,13 +25,31 @@ def all_posts(request):
 
 
 def single_post(request, slug):
-    post = Post.objects.select_related('post_setting', 'category').get(slug=slug)
+    try:
+        post = Post.objects.select_related('post_setting', 'category').get(slug=slug)
+    except Post.DoesNotExist:
+        raise Http404('page not found')
     context = {
         'post': post,
         'post_setting': post.post_setting,
         'category': post.category,
-        'comments': post.comments.all()
+        'comments': post.comments.all(),
+        'form': CommentForm()
     }
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.post = post
+            comment.save()
+            # ===============================with forms.Form
+            # content = form.cleaned_data['content']
+            # author = request.user
+            # comment = Comment.objects.create(author=author, post=post, content=content)
+            # comment.save()
+        else:
+            context['form'] = form
     return render(request, 'blog/post_single.html', context)
 
     # try:
@@ -78,8 +99,86 @@ def author_posts(request, slug):
         string = "<ul>" + string + "</ul>"
     return HttpResponse(string)
 
-# Create your views here.
-# def home(request):
+
+def login_view(request):
+    context = {}
+    # if request.user.is_authenticated:
+    #     return redirect('posts_archive')
+    # if request.method == 'POST':
+    #     username = request.POST.get('username')
+    #     password = request.POST.get('password')
+    #     user = authenticate(request, username=username, password=password)
+    #     if user and user.is_active:
+    #         login(request, user)
+    #         return redirect('posts_archive')
+    # else:
+    #     pass
+    #
+    # return render(request, 'blog/form.html', context={})
+
+    if request.user.is_authenticated:
+        return redirect('posts_archive')
+    if request.method == 'GET':
+        form = LoginForm()
+        context = {'form': form}
+    else:
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user and user.is_active:
+                login(request, user)
+                return redirect('posts_archive')
+            else:
+                context = {'form': form}
+    return render(request, 'blog/form.html', context=context)
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('posts_archive')
+
+
+def register_view(request):
+    # if request.method == 'GET':
+    #     form = UserRegistrationForm()
+    #     context = {'form': form}
+    # else:
+    #     form = UserRegistrationForm(request.POST)
+    #     if form.is_valid():
+    #         username = form.cleaned_data['username']
+    #         password = form.cleaned_data['password']
+    #         email = form.cleaned_data['email']
+    #         first_name = form.cleaned_data['first_name']
+    #         last_name = form.cleaned_data['last_name']
+    #         user = User.objects.create(username=username, email=email, first_name=first_name, last_name=last_name)
+    #         user.set_password(password)
+    #         user.save()
+    #         return redirect('login')
+    #
+    #     else:
+    #         pass
+    #     print(form)
+    #     context = {'form': form}
+
+    if request.method == 'GET':
+        form = UserRegistrationForm()
+        context = {'form': form}
+    else:
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(user.password)
+            user.save()
+            return redirect('login')
+        else:
+            context = {'form': form}
+
+    return render(request, 'blog/register.html', context=context)
+
+
+    # def home(request):
 #     posts = Post.objects.all()
 #     string = ' , '.join([post.title for post in posts])
 #     return HttpResponse(string)
