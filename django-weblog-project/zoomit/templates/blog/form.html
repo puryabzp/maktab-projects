@@ -1,0 +1,63 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block selfstyle %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+{% block title %}Login Page
+{% endblock %}
+{% block body %}
+     <form action="{% url 'login' %}" method="post">
+                     {% csrf_token %}
+                      <div class="bg-dark" id="login-box">
+                      <div class="left">
+                        <h1>ورود</h1>
+
+                        <input type="text" name="username" placeholder="Username" />
+                        <input type="password" name="password" placeholder="Password" />
+
+                        <button type="submit" class="btn btn-primary mb-2">ورود</button>
+                          <br>
+                          <br>
+                        <a href="{% url 'register' %}" id="register_link">همین حالا ثبت نام کن!</a>
+                      </div>
+
+                      <div class="right">
+                        <h1 class="loginwith">ورود </h1>
+
+                        <button class="social-signin facebook">Log in with facebook</button>
+                        <button class="social-signin twitter">Log in with Twitter</button>
+                        <button class="social-signin google">Log in with Google Plus</button>
+                      </div>
+                      <button class="or" id="changer"></button>
+                    </div>
+
+                </form>
+                {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alert">
+                        <strong>{{ form.errors}}</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close" id="close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                {% endif %}
+
+{% endblock %}
+{% block javascript %}
+
+<script>
+            $(document).ready(function (){
+                $('#close').click(function (){
+                        $('#alert').hide()
+
+                })
+                $('#changer').click(function (event){
+                     event.preventDefault();
+                    $('div.right,div.left').toggleClass()
+
+                })
+            })
+
+
+</script>
+{% endblock %}

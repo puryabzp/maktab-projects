@@ -1,0 +1,55 @@
+{% extends 'base/base.html'%}
+{% load static %}
+{% block selfstyle %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+{% endblock %}
+{% block title %}
+Register
+{% endblock %}
+{% block body %}
+
+
+                <form action="{% url 'register' %}" method="post">
+                     {% csrf_token %}
+                      <div id="login-box">
+                      <div class="bg-dark left">
+                        <h1>ایجاد حساب کاربری</h1>
+
+                        <input type="text" name="email" placeholder="E-mail" />
+
+                        <input type="text" name="full_name" placeholder="Full Name" />
+                        <input type="password" name="password" placeholder="Password" />
+                        <input type="password" name="password2" placeholder="Retype password" />
+                         <div class="invalid-tooltip bg-danger">Example invalid feedback text</div>
+
+                        <button type="submit" class="btn btn-primary mb-2">ثبت نام کن!</button>
+                      </div>
+
+                      <div  class="right"></div>
+                    </div>
+                    <div>
+                    </div>
+                </form>
+                {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alert">
+                          <strong>{{ form.errors}}</strong>
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close" id="close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                    </div>
+
+                {% endif %}
+
+{% endblock %}
+{% block javascript %}
+
+<script>
+            $(document).ready(function (){
+                $('#close').click(function (){
+                        $('#alert').hide()
+
+                })
+            })
+
+</script>
+{% endblock %}
