@@ -1,86 +1,72 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
 from django.shortcuts import render, redirect
-from .models import Post, Category, PostSetting, Comment, CommentLike
-from django.http import HttpResponse, HttpResponseNotFound, Http404
-from django.template import loader
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.edit import FormMixin, CreateView, BaseCreateView
+from django.views.generic.list import BaseListView, MultipleObjectTemplateResponseMixin
+
+from .models import Post, Category, Comment, CommentLike
+from django.http import HttpResponse, Http404
+
 from django.urls import reverse
-from .forms import UserRegistrationForm, CommentForm, LoginForm
+# from .forms import UserRegistrationForm, CommentForm, LoginForm
+from .forms import CommentForm, LikeCommentForm
+from django.views.generic import ListView, DetailView, FormView
+
+User = get_user_model()
 
 
-def all_posts(request):
-    author = request.GET.get('author', None)
-    posts = Post.objects.all()
-    if author:
-        posts = posts.filter(author__username=author)
-
-    category = request.GET.get('category', None)
-    if category:
-        posts = Post.objects.filter(category__title=category)
-
-    context = {
-        'posts': posts
-    }
-    return render(request, 'blog/posts.html', context)
+class PostsView(ListView):
+    model = Post
+    queryset = Post.objects.all()
+    template_name = 'blog/posts.html'
 
 
-def single_post(request, slug):
-    try:
-        post = Post.objects.select_related('post_setting', 'category').get(slug=slug)
-    except Post.DoesNotExist:
-        raise Http404('page not found')
-    context = {
-        'post': post,
-        'post_setting': post.post_setting,
-        'category': post.category,
-        'comments': post.comments.all(),
-        'form': CommentForm()
-    }
-    if request.method == 'POST':
+class SinglePost(DetailView):
+    model = Post
+    template_name = 'blog/post_single.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        post = context['post']
+        context['comments'] = post.comments.all()
+        context['post_setting'] = post.post_setting
+        context['form'] = CommentForm
+        return context
+
+
+class CreateComment(FormView):
+    form_class = CommentForm
+    template_name = 'blog/post_single.html'
+
+    def post(self, request, *args, **kwargs):
         form = CommentForm(request.POST)
+        print(request.POST)
+        post = Post.objects.get(id=request.POST['post'])
+        print(post)
         if form.is_valid():
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.post = post
+            content = form.cleaned_data['content']
+            post = Post.objects.get(id=request.POST['post'])
+            user = request.user
+            comment = Comment.objects.create(author=user, post=post, content=content)
             comment.save()
-            # ===============================with forms.Form
-            # content = form.cleaned_data['content']
-            # author = request.user
-            # comment = Comment.objects.create(author=author, post=post, content=content)
-            # comment.save()
-        else:
-            context['form'] = form
-    return render(request, 'blog/post_single.html', context)
-
-    # try:
-    #     posts = Post.objects.get(slug=slug)
-    # except:
-    #     raise Http404("Not Found!")
-    #
-    # html = "<html><head><title>this is a post</title></head><body><h1>{}</h1><p>{}</p><a href = {}>show posts Of
-    # this " \ "categories</a></body></html> ".format(posts.title, posts.content, reverse("category_posts",
-    # kwargs={"slug": posts.category.slug})) return HttpResponse(html)
+        return redirect('single_post', post.slug)
 
 
-def category_posts(request, slug):
-    posts = Post.objects.filter(category__slug=slug)
-    string = ""
-    link = reverse("posts_archive")
-    html = "<li>title : {}  , content: {}   , <a href={}>click for see all posts</a> </li>"
-    for obj in posts:
-        string += html.format(obj.title, obj.content, link)
-        string = "<ul>" + string + "</ul>"
-    return HttpResponse(string)
+class CategoryPosts(BaseListView, MultipleObjectTemplateResponseMixin):
+    template_name = 'blog/posts.html'
+    model = Post
+
+    def get(self, request, *args, **kwargs):
+        print(args)
+        posts = Post.objects.filter(category__slug=self.kwargs['slug'])
+        return render(request, 'blog/posts.html', {'post_list': posts})
 
 
-def show_categories(request):
-    categories = Category.objects.all()
-    string = ""
-    html = "<li><a href={}>{}</a></li>"
-    for obj in categories:
-        string += html.format(reverse("category_posts", kwargs={"slug": obj.slug}), obj.title)
-        string = "<ul>" + string + "</ul><a href={}>Back home</a>".format(reverse('main_page'))
-    return HttpResponse(string)
+class Categories(ListView):
+    model = Category
+    queryset = Category.objects.all()
+    template_name = 'blog/categories.html'
 
 
 def main_page(request):
@@ -90,129 +76,34 @@ def main_page(request):
     return HttpResponse(html)
 
 
-def author_posts(request, slug):
-    posts = Post.objects.filter(author__username=slug)
-    html = "<li>title : {}  , content: {}   , <a href={}>click for see all posts</a> </li>"
-    string = ""
-    for post in posts:
-        string += html.format(post.title, post.content, "link")
-        string = "<ul>" + string + "</ul>"
-    return HttpResponse(string)
+class LikeComment(CreateView):
+    template_name = 'blog/post_single.html'
+    form_class = LikeCommentForm
 
-
-def login_view(request):
-    context = {}
-    # if request.user.is_authenticated:
-    #     return redirect('posts_archive')
-    # if request.method == 'POST':
-    #     username = request.POST.get('username')
-    #     password = request.POST.get('password')
-    #     user = authenticate(request, username=username, password=password)
-    #     if user and user.is_active:
-    #         login(request, user)
-    #         return redirect('posts_archive')
-    # else:
-    #     pass
-    #
-    # return render(request, 'blog/form.html', context={})
-
-    if request.user.is_authenticated:
-        return redirect('posts_archive')
-    if request.method == 'GET':
-        form = LoginForm()
-        context = {'form': form}
-    else:
-        form = LoginForm(request.POST)
+    def post(self, request, *args, **kwargs):
+        slug = request.POST['post_slug']
+        form = self.form_class(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-            if user and user.is_active:
-                login(request, user)
-                return redirect('posts_archive')
-            else:
-                context = {'form': form}
-    return render(request, 'blog/form.html', context=context)
+            condition = bool(int(form.cleaned_data['condition']))
+            author = request.user
+            comment = Comment.objects.get(id=form.cleaned_data['comment'])
+            try:
+                like = CommentLike.objects.get(author=author, comment=comment)
+                like.condition = condition
+                slug = request.POST['post_slug']
+                like.save()
+                return redirect('single_post', slug)
+
+            except CommentLike.DoesNotExist:
+                like = CommentLike.objects.create(author=author, comment=comment, condition=condition)
+                like.save()
+                return redirect('single_post', slug)
 
 
-def logout_view(request):
-    logout(request)
-    return redirect('posts_archive')
+class AuthorsPosts(BaseListView, MultipleObjectTemplateResponseMixin):
+    model = Post
+    template_name = 'blog/posts.html'
 
-
-def register_view(request):
-    # if request.method == 'GET':
-    #     form = UserRegistrationForm()
-    #     context = {'form': form}
-    # else:
-    #     form = UserRegistrationForm(request.POST)
-    #     if form.is_valid():
-    #         username = form.cleaned_data['username']
-    #         password = form.cleaned_data['password']
-    #         email = form.cleaned_data['email']
-    #         first_name = form.cleaned_data['first_name']
-    #         last_name = form.cleaned_data['last_name']
-    #         user = User.objects.create(username=username, email=email, first_name=first_name, last_name=last_name)
-    #         user.set_password(password)
-    #         user.save()
-    #         return redirect('login')
-    #
-    #     else:
-    #         pass
-    #     print(form)
-    #     context = {'form': form}
-
-    if request.method == 'GET':
-        form = UserRegistrationForm()
-        context = {'form': form}
-    else:
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(user.password)
-            user.save()
-            return redirect('login')
-        else:
-            context = {'form': form}
-
-    return render(request, 'blog/register.html', context=context)
-
-
-    # def home(request):
-#     posts = Post.objects.all()
-#     string = ' , '.join([post.title for post in posts])
-#     return HttpResponse(string)
-#
-#
-# def single(requset, slug): try: posts = Post.objects.get(slug=slug) except Post.DoesNotExist: raise Http404() link
-# = reverse('posts_archive') blog = '<html><head><title>purya bzp</title></head><body><h1>{}</h1><p>{}</p><a href={
-# }>link</a></body></html'.format( posts.title, posts.content, link) return HttpResponse(blog)
-#
-
-# def show_categories(request):
-#     category_posts = reverse('categories_posts')
-#     posts = Post.objects.all()
-#     categories = [post.category.title for post in posts]
-#     string = ""
-#     html = "<a href = {}>{}</a>"
-#     for post in categories:
-#         string += html.format(category_posts, categories[post])
-#     return HttpResponse(string)
-#
-#
-# def show_categories_posts(request, category):
-#     post_lists = reverse('posts_archive')
-#     string = ""
-#     posts = Post.objects.filter(category__slug=category)
-#     category_posts = '<li><a href={}>{}</a></li>'
-#     for obj in posts:
-#         string += category_posts.format(post_lists, obj.title)
-#         string = "<ul>" + string + "</ul>"
-#
-#     return HttpResponse(string)
-#
-# def show_categories(request):
-#     category_posts = reverse('categories_posts')
-#     posts = Post.objects.all()
-#     string = ' , '.join([post.category.title for post in posts])
-#     return HttpResponse(string)
+    def get(self, request, *args, **kwargs):
+        posts = Post.objects.filter(author=self.kwargs['slug'])
+        return render(request, 'blog/posts.html', {'post_list': posts})

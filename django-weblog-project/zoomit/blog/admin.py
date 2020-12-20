@@ -1,5 +1,9 @@
 from django.contrib import admin
 from .models import Post, Category, Comment, PostSetting, CommentLike
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+
+User = get_user_model()
 
 
 class ChildrenItemInline(admin.TabularInline):

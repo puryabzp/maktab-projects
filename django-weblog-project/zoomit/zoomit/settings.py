@@ -25,6 +25,9 @@ SECRET_KEY = 's_)2p=gn$$g$p=$dzgv6q=+udrnbo9kshw5cu^iy3pan04g7kg'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+AUTH_USER_MODEL = 'account.User'
+LOGIN_REDIRECT_URL = 'posts_archive'
+LOGOUT_REDIRECT_URL = 'posts_archive'
 
 # Application definition
 
@@ -36,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blog',
+    'account',
 ]
 
 MIDDLEWARE = [
