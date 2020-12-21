@@ -8,14 +8,28 @@
 {% block body %}
             <div class="container w-100 h-100">
             <div class="row d-flex justify-content-center align-items-center w-100 h-100">
-                <div class="col-12 bg-dark h-50" style="text-align: center">
+                <div class="col-12 h-auto" style="text-align: center">
+                <h3 class="pt-3">دسته بندی مطالب : </h3>
                     {% for category in category_list %}
-                    <a href="#" class="mt-2">{{ category.title }}</a>
+                    <a style="display: block;text-decoration: none;color:black " href="#" class="pt-4">{{ category.title }}</a>
                     {% endfor %}
 
                 </div>
             </div>
             </div>
+
+    <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Dropdown button
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    {% for category in category_list %}
+        <a class="dropdown-item" href="#">{{ category.title }}</a>
+    {% endfor %}
+
+
+  </div>
+</div>
 
 
 {% endblock %}

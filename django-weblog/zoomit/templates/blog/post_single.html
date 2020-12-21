@@ -66,7 +66,7 @@
             {% if post_setting.allow_discussion %}
 
                 {% if request.user.is_authenticated %}
-                    <form class="w-100" action="{% url 'comment_create' %}" method="post" >
+                    <form class="w-100" action="{% url 'comment_create' %}" method="post" style="color: transparent">
                         {% csrf_token %}
                         {{form}}
                         <input type="hidden" name="post" value="{{ post.id }}">
@@ -89,10 +89,12 @@
             <hr>
         </div>
         {% if post_setting.comment %}
-            {% for comment in comments %}
+
+
+       {% for comment in comments %}
                 <div class="mb-4">
                     <!-- <img src="la.jpg" style="border-radius: 50%; width: 30px; height: 30px;">  -->
-                    <a href="#" style="display: inline;color: #4e555b;text-decoration: none">{{comment.author}}</a>
+                    <a href="#" style="display: inline;color: #4e555b;text-decoration: none">{{comment.author.full_name}}</a>
                     <span>//</span>
                     <a href="#" style="display: inline;color: #4e555b;text-decoration: none"> {{ comment.create_at}}</a>
                     <p>{{ comment.content }}</p>
@@ -123,7 +125,7 @@
                             <form action="{% url 'like_comment' %}" method="post">
                                 {% csrf_token %}
                                 <button type="submit" style="border: none;background-color: transparent" disabled><i class="fas fa-thumbs-up" style="color: green;"></i></button>
-                                <input type="hidden" name="condition" checked  style="display: none" value='1'>
+                                <input type="hidden" name="condition"  style="display: none" value='1'>
                                 <input type="hidden" name="comment" value="{{ comment.id }}">
                                 <input type="hidden" name="post_slug" value="{{ post.slug}}">
                                 {% csrf_token %}
@@ -145,6 +147,22 @@
                 </div>
                           <!-- for comments -->
             {% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         {% endif %}
                     <!-- for comments -->

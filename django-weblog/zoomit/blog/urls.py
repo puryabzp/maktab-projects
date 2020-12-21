@@ -11,8 +11,7 @@ urlpatterns = [
     path('', main_page, name="main_page"),
     path('like_comment/', LikeComment.as_view(), name='like_comment'),
     path('posts/', PostsView.as_view(), name='posts_archive'),
-    path('comment/', CreateComment.as_view()
-         , name='comment_create'),
+    path('comment/', CreateComment.as_view(), name='comment_create'),
     path('authors/<slug:slug>/', AuthorsPosts.as_view(), name="authors_posts"),
 
 ]

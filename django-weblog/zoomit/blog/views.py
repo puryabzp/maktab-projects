@@ -13,6 +13,7 @@ from django.urls import reverse
 # from .forms import UserRegistrationForm, CommentForm, LoginForm
 from .forms import CommentForm, LikeCommentForm
 from django.views.generic import ListView, DetailView, FormView
+from zoomit.settings import TEMPLATES
 
 User = get_user_model()
 
@@ -23,10 +24,9 @@ class PostsView(LoginRequiredMixin, ListView):
     template_name = 'blog/posts.html'
 
 
-class SinglePost(PermissionRequiredMixin,DetailView):
+class SinglePost(DetailView):
     model = Post
     template_name = 'blog/post_single.html'
-    permission_required = ('blog.view_comment',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -73,6 +73,7 @@ class Categories(ListView):
     template_name = 'blog/categories.html'
 
 
+
 def main_page(request):
     html = "<html><head><title></title></head><body><p>Want to see Categories:</p><a href={" \
            "}>Categories</a></br><p>Want to see Posts:</p><a href={}>Posts</a></html>".format(
@@ -112,3 +113,5 @@ class AuthorsPosts(BaseListView, MultipleObjectTemplateResponseMixin):
         print(kwargs)
         posts = Post.objects.filter(author__full_name=kwargs['slug'])
         return render(request, 'blog/posts.html', {'post_list': posts})
+
+

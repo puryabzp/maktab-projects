@@ -62,6 +62,7 @@ class RegisterView(CreateView, ModelFormMixin):
             user.set_password(user.password)
             user.save()
             return redirect('login')
+        return render(request, 'blog/register.html', context={'form': form})
 
 # def register_view(request):
 #     if request.method == 'GET':

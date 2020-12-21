@@ -6,33 +6,8 @@
 {% block title %}Login Page
 {% endblock %}
 {% block body %}
-     <form action="{% url 'login' %}" method="post">
-                     {% csrf_token %}
-                      <div class="bg-dark" id="login-box">
-                      <div class="left">
-                        <h1>ورود</h1>
 
-                        <input type="text" name="username" placeholder="Username" />
-                        <input type="password" name="password" placeholder="Password" />
-
-                        <button type="submit" class="btn btn-primary mb-2">ورود</button>
-                          <br>
-                          <br>
-                        <a href="{% url 'register' %}" id="register_link">همین حالا ثبت نام کن!</a>
-                      </div>
-
-                      <div class="right">
-                        <h1 class="loginwith">ورود </h1>
-
-                        <button class="social-signin facebook">Log in with facebook</button>
-                        <button class="social-signin twitter">Log in with Twitter</button>
-                        <button class="social-signin google">Log in with Google Plus</button>
-                      </div>
-                      <button class="or" id="changer"></button>
-                    </div>
-
-                </form>
-                {% if form.errors %}
+                        {% if form.errors %}
                     <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alert">
                         <strong>{{ form.errors}}</strong>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close" id="close">
@@ -41,7 +16,74 @@
                     </div>
 
                 {% endif %}
+    <div class="container h-100 w-100" >
+            <div class="row h-100 w-100 d-flex justify-content-center align-items-center">
+                <div class="row col-8 bg-danger p-0 m-0 h-50 w-auto" style="box-shadow: 5px 10px #888888;">
+                    <div class="col-6 bg-dark p-0 m-0 d-flex justify-content-center align-items-center flex-column">
 
+                        <h1>ورود</h1>
+                        <button class="social-signin facebook" style="width: 50%"><i class="fab fa-facebook-f"></i></button>
+                        <button class="social-signin twitter" style="width: 50%"><i class="fab fa-twitter"></i></button>
+                        <button class="social-signin google" style="width: 50%"><i class="fab fa-google-plus-g"></i> </button>
+
+
+
+
+                    </div>
+                    <div class="col-6 bg-success p-0 m-0 d-flex justify-content-center align-items-center flex-column">
+                        <h1>ورود</h1>
+                        <form action="{% url 'login' %}" method="post" style="width: 80%">
+                            {% csrf_token %}
+                            <input class="w-100"  type="text" name="username" placeholder="username">
+                            <input class="w-100" type="password" name="password" placeholder="password">
+                            <button type="submit" class="btn btn-primary mb-2 w-100" style="border-radius: 60px">ورود</button>
+                            <a href="{% url 'register' %}" style="display: block;color: white;text-decoration: none;text-align: center">همین حالا ثبت نام کن!</a>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+    </div>
+
+
+
+
+{#     <form action="{% url 'login' %}" method="post">#}
+{#                     {% csrf_token %}#}
+{#                      <div class="bg-dark" id="login-box">#}
+{#                      <div class="left">#}
+{#                        <h1>ورود</h1>#}
+{##}
+{#                        <input type="text" name="username" placeholder="Username" />#}
+{#                        <input type="password" name="password" placeholder="Password" />#}
+{##}
+{#                        <button type="submit" class="btn btn-primary mb-2">ورود</button>#}
+{#                          <br>#}
+{#                          <br>#}
+{#                        <a href="{% url 'register' %}" id="register_link">همین حالا ثبت نام کن!</a>#}
+{#                      </div>#}
+{##}
+{#                      <div class="right">#}
+{#                        <h1 class="loginwith">ورود </h1>#}
+{##}
+{#                        <button class="social-signin facebook">Log in with facebook</button>#}
+{#                        <button class="social-signin twitter">Log in with Twitter</button>#}
+{#                        <button class="social-signin google">Log in with Google Plus</button>#}
+{#                      </div>#}
+{#                      <button class="or" id="changer"></button>#}
+{#                    </div>#}
+{##}
+{#                </form>#}
+{#                {% if form.errors %}#}
+{#                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alert">#}
+{#                        <strong>{{ form.errors}}</strong>#}
+{#                        <button type="button" class="close" data-dismiss="alert" aria-label="Close" id="close">#}
+{#                        <span aria-hidden="true">&times;</span>#}
+{#                        </button>#}
+{#                    </div>#}
+{##}
+{#                {% endif %}#}
+{##}
 {% endblock %}
 {% block javascript %}
 
