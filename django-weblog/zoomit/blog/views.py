@@ -1,5 +1,8 @@
+from datetime import *
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.views.generic import ArchiveIndexView, YearArchiveView, MonthArchiveView, WeekArchiveView
 
 from django.shortcuts import render, redirect
 from django.views.generic.detail import SingleObjectMixin
@@ -70,15 +73,11 @@ class CategoryPosts(BaseListView, MultipleObjectTemplateResponseMixin):
 class Categories(ListView):
     model = Category
     queryset = Category.objects.all()
-    template_name = 'blog/categories.html'
-
+    template_name = 'blog/latest.html'
 
 
 def main_page(request):
-    html = "<html><head><title></title></head><body><p>Want to see Categories:</p><a href={" \
-           "}>Categories</a></br><p>Want to see Posts:</p><a href={}>Posts</a></html>".format(
-        reverse("show_categories"), reverse("posts_archive"))
-    return HttpResponse(html)
+    return redirect('posts_archive')
 
 
 class LikeComment(CreateView):
@@ -115,3 +114,37 @@ class AuthorsPosts(BaseListView, MultipleObjectTemplateResponseMixin):
         return render(request, 'blog/posts.html', {'post_list': posts})
 
 
+class ArticleMonthArchiveView(MonthArchiveView):
+    queryset = Post.objects.all()
+    date_field = "publish_time"
+    allow_future = True
+    allow_empty = True
+    template_name = 'blog/posts.html'
+    context_object_name = 'post_list'
+
+
+class ArticleWeekArchiveView(WeekArchiveView):
+    queryset = Post.objects.all()
+    date_field = "publish_time"
+    week_format = "%W"
+    allow_future = True
+    allow_empty = True
+    template_name = 'blog/posts.html'
+    context_object_name = 'post_list'
+
+
+def show_month(request):
+    if request.method == 'POST':
+        time = request.POST['monthly']
+        real_time = datetime.strptime(time, '%Y-%m-%d')
+        return redirect('archive_month_numeric', real_time.year, real_time.month)
+    return redirect('posts_archive')
+
+
+def show_week(request):
+    if request.method == 'POST':
+        time = request.POST['weekly']
+        print(time)
+        real_time = datetime.strptime(time, '%Y-%m-%d')
+        a = int(real_time.strftime("%W"))
+        return redirect('archive_week',real_time.year, a)
