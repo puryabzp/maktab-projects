@@ -4,7 +4,7 @@ from django.views.generic import ArchiveIndexView
 
 from blog.models import Post
 from blog.views import main_page, LikeComment, PostsView, SinglePost, CreateComment, Categories, CategoryPosts, \
-    AuthorsPosts, ArticleMonthArchiveView, ArticleWeekArchiveView,show_month,show_week
+    AuthorsPosts, ArticleMonthArchiveView, ArticleWeekArchiveView, ShowMonthly, ShowWeekly,SearchField
 
 urlpatterns = [
 
@@ -22,7 +22,8 @@ urlpatterns = [
     path('monthly/<int:year>/<int:month>/', ArticleMonthArchiveView.as_view(month_format='%m'),
          name="archive_month_numeric"),
     path('<int:year>/week/<int:week>/', ArticleWeekArchiveView.as_view(), name="archive_week"),
-    path('show_month/', show_month, name='show_month'),
-    path('show_week/', show_week, name='show_week'),
+    path('show_month/', ShowMonthly.as_view(), name='show_month'),
+    path('show_week/', ShowWeekly.as_view(), name='show_week'),
+    path('search/', SearchField.as_view(), name='search'),
 
 ]

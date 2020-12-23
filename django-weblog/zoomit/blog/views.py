@@ -1,22 +1,14 @@
 from datetime import *
-
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import ArchiveIndexView, YearArchiveView, MonthArchiveView, WeekArchiveView
-
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
+from django.views.generic import MonthArchiveView, WeekArchiveView
 from django.shortcuts import render, redirect
-from django.views.generic.detail import SingleObjectMixin
-from django.views.generic.edit import FormMixin, CreateView, BaseCreateView
+from django.views.generic.edit import CreateView, BaseFormView
 from django.views.generic.list import BaseListView, MultipleObjectTemplateResponseMixin
-
 from .models import Post, Category, Comment, CommentLike
-from django.http import HttpResponse, Http404
-
-from django.urls import reverse
-# from .forms import UserRegistrationForm, CommentForm, LoginForm
 from .forms import CommentForm, LikeCommentForm
 from django.views.generic import ListView, DetailView, FormView
-from zoomit.settings import TEMPLATES
 
 User = get_user_model()
 
@@ -133,18 +125,35 @@ class ArticleWeekArchiveView(WeekArchiveView):
     context_object_name = 'post_list'
 
 
-def show_month(request):
-    if request.method == 'POST':
-        time = request.POST['monthly']
-        real_time = datetime.strptime(time, '%Y-%m-%d')
+class ShowMonthly(BaseFormView):
+
+    def post(self, request, *args, **kwargs):
+        input_time = request.POST['monthly']
+        real_time = datetime.strptime(input_time, '%Y-%m-%d')
         return redirect('archive_month_numeric', real_time.year, real_time.month)
-    return redirect('posts_archive')
 
 
-def show_week(request):
-    if request.method == 'POST':
-        time = request.POST['weekly']
-        print(time)
-        real_time = datetime.strptime(time, '%Y-%m-%d')
+class ShowWeekly(BaseFormView):
+
+    def post(self, request, *args, **kwargs):
+        input_time = request.POST['weekly']
+        print(input_time)
+        real_time = datetime.strptime(input_time, '%Y-%m-%d')
         a = int(real_time.strftime("%W"))
-        return redirect('archive_week',real_time.year, a)
+        return redirect('archive_week', real_time.year, a)
+
+
+class SearchField(ListView):
+    template_name = 'base/header.html'
+    model = Post
+
+    def post(self, request, *args, **kwargs):
+        search = request.POST['search']
+        print(search)
+        if not search:
+            return render(request, 'blog/empty_search.html', {})
+        object_list = Post.objects.filter(Q(content__icontains=search) | Q(title__icontains=search))
+        if not object_list:
+            return render(request, 'blog/not_found.html', {})
+        return render(request, 'blog/posts.html', {'post_list': object_list})
+
