@@ -3,7 +3,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import ArchiveIndexView
 
 from blog.models import Post
-from blog.views import main_page, LikeComment, PostsView, SinglePost, CreateComment, Categories, CategoryPosts, \
+from blog.views import main_page, comment_like, PostsView, SinglePost, create_comment, Categories, CategoryPosts, \
     AuthorsPosts, ArticleMonthArchiveView, ArticleWeekArchiveView, ShowMonthly, ShowWeekly,SearchField
 
 urlpatterns = [
@@ -12,9 +12,9 @@ urlpatterns = [
     path('categories/<slug:slug>/', CategoryPosts.as_view(), name="category_posts"),
     path('categories/', Categories.as_view(), name='show_categories'),
     path('', main_page, name="main_page"),
-    path('like_comment/', LikeComment.as_view(), name='like_comment'),
+    path('like_comment/', comment_like, name='like_comment'),
     path('posts/', PostsView.as_view(), name='posts_archive'),
-    path('comment/', CreateComment.as_view(), name='comment_create'),
+    path('comment/', create_comment, name='comment_create'),
     path('authors/<slug:slug>/', AuthorsPosts.as_view(), name="authors_posts"),
     path('latest/', ArchiveIndexView.as_view(model=Post, date_field='create_at', template_name='blog/posts.html',
                                              context_object_name='post_list'),
