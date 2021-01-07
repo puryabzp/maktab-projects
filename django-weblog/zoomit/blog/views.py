@@ -22,6 +22,7 @@ class PostsView(LoginRequiredMixin, ListView):
     model = Post
     queryset = Post.objects.all()
     template_name = 'blog/posts.html'
+    paginate_by = 3
 
 
 class SinglePost(DetailView):
@@ -66,7 +67,7 @@ def create_comment(request):
     comment_count = post.comments.count()
     print(comment_count)
     print(type(comment.create_at))
-    resopnse = {'author': str(user), 'content': comment.content,
+    resopnse = {'author': str(user.get_full_name()), 'content': comment.content,
                 'like_count': comment.like_count, 'dislike_count': comment.dislike_count,
                 'create_at': str(comment.create_at), 'comment_count': comment_count, 'comment_id': comment.id}
 
@@ -190,6 +191,7 @@ class ShowWeekly(BaseFormView):
 class SearchField(ListView):
     template_name = 'base/header.html'
     model = Post
+    paginate_by = 1
 
     def post(self, request, *args, **kwargs):
         search = request.POST['search']

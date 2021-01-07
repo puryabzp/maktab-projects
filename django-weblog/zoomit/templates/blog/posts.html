@@ -162,17 +162,32 @@
               </div>
               {% endfor %}
 
+            
 
               <!-- pagination -->
-              <div class="mx-auto mt-5" >
-                  <ul class="pagination" >
-                    <li class="page-item"><a class="page-link" href="#" style="color: black;">قبلی</a></li>
-                    <li class="page-item"><a class="page-link" href="#" style="color: black;">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#" style="color: black;">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#" style="color: black;">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#" style="color: black;">بعدی</a></li>
-                  </ul>
-                </div>
+            <div class="pagination mx-auto mt-5">
+                {% if page_obj.has_previous %}
+                    <a class=" m-2" href="?page={{ page_obj.previous_page_number }}" style="color: black; text-decoration: none;direction: ltr"> قبلی&raquo;</a>
+                    <a class="m-2" href="?page=1" style="color: black; text-decoration: none">صفحه اول</a>
+
+                {% endif %}
+                <span class="m-2">صفحه {{ page_obj.number }} از {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a class="m-2" href="?page={{ page_obj.next_page_number }}" style="color: black; text-decoration: none">بعدی</a>
+                    <a class="m-2" href="?page={{ page_obj.paginator.num_pages }}" style="color: black; text-decoration: none">آخر &raquo;</a>
+                {% endif %}
+            </div>
+
+
+{#              <div class="mx-auto mt-5" >#}
+{#                  <ul class="pagination" >#}
+{#                    <li class="page-item"><a class="page-link" href="#" style="color: black;">قبلی</a></li>#}
+{#                    <li class="page-item"><a class="page-link" href="#" style="color: black;">1</a></li>#}
+{#                    <li class="page-item"><a class="page-link" href="#" style="color: black;">2</a></li>#}
+{#                    <li class="page-item"><a class="page-link" href="#" style="color: black;">3</a></li>#}
+{#                    <li class="page-item"><a class="page-link" href="#" style="color: black;">بعدی</a></li>#}
+{#                  </ul>#}
+{#                </div>#}
 
                 <!-- pagination -->
 

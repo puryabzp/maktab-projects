@@ -4,7 +4,8 @@ from django.views.generic import ArchiveIndexView
 
 from blog.models import Post
 from blog.views import main_page, comment_like, PostsView, SinglePost, create_comment, Categories, CategoryPosts, \
-    AuthorsPosts, ArticleMonthArchiveView, ArticleWeekArchiveView, ShowMonthly, ShowWeekly,SearchField
+    AuthorsPosts, ArticleMonthArchiveView, ArticleWeekArchiveView, ShowMonthly, ShowWeekly, SearchField
+from .api import post_list, post_detail,comment_detail,comment_list
 
 urlpatterns = [
 
@@ -25,5 +26,8 @@ urlpatterns = [
     path('show_month/', ShowMonthly.as_view(), name='show_month'),
     path('show_week/', ShowWeekly.as_view(), name='show_week'),
     path('search/', SearchField.as_view(), name='search'),
-
+    path('api/posts/', post_list, name='post_list'),
+    path('api/posts/<int:pk>/', post_detail, name='post_detail'),
+    path('api/comments/', comment_list, name='comment_list'),
+    path('api/comments/<int:pk>/', comment_detail, name='comment_detail')
 ]
